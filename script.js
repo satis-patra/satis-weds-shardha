@@ -40,3 +40,72 @@ gateOpenVideo?.addEventListener('ended', () => {
 });
 
 musicToggle?.addEventListener('click', () => setMusicPlaying(weddingAudio.paused));
+
+const scratchCard = document.querySelector('.scratch-card');
+const scratchCanvas = document.querySelector('.scratch-canvas');
+
+if (scratchCard && scratchCanvas) {
+    const context = scratchCanvas.getContext('2d', { willReadFrequently: true });
+    let drawing = false;
+
+    function prepareScratchCard() {
+        const bounds = scratchCard.getBoundingClientRect();
+        const pixelRatio = window.devicePixelRatio || 1;
+        scratchCanvas.width = Math.round(bounds.width * pixelRatio);
+        scratchCanvas.height = Math.round(bounds.height * pixelRatio);
+        scratchCanvas.style.width = `${bounds.width}px`;
+        scratchCanvas.style.height = `${bounds.height}px`;
+        context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+
+        const coating = context.createLinearGradient(0, 0, bounds.width, bounds.height);
+        coating.addColorStop(0, '#cbb27d');
+        coating.addColorStop(.48, '#f0dfb0');
+        coating.addColorStop(1, '#b79a60');
+        context.fillStyle = coating;
+        context.fillRect(0, 0, bounds.width, bounds.height);
+
+        context.globalAlpha = .55;
+        context.fillStyle = '#76623d';
+        context.font = '500 11px "DM Sans", sans-serif';
+        context.textAlign = 'center';
+        context.fillText('SCRATCH HERE', bounds.width / 2, bounds.height / 2);
+        context.globalAlpha = 1;
+    }
+
+    function scratchAt(event) {
+        const bounds = scratchCanvas.getBoundingClientRect();
+        const point = event.touches ? event.touches[0] : event;
+        const x = point.clientX - bounds.left;
+        const y = point.clientY - bounds.top;
+        context.save();
+        context.globalCompositeOperation = 'destination-out';
+        context.beginPath();
+        context.arc(x, y, 20, 0, Math.PI * 2);
+        context.fill();
+        context.restore();
+        checkScratchCompletion();
+    }
+
+    function checkScratchCompletion() {
+        const pixels = context.getImageData(0, 0, scratchCanvas.width, scratchCanvas.height).data;
+        let cleared = 0;
+        const step = 16;
+        for (let index = 3; index < pixels.length; index += step) {
+            if (pixels[index] === 0) cleared++;
+        }
+        if (cleared / (pixels.length / step) > .46) {
+            scratchCanvas.style.transition = 'opacity .45s ease';
+            scratchCanvas.style.opacity = '0';
+            scratchCard.querySelector('.scratch-instruction')?.remove();
+            drawing = false;
+        }
+    }
+
+    prepareScratchCard();
+    window.addEventListener('resize', prepareScratchCard);
+
+    scratchCanvas.addEventListener('pointerdown', event => { drawing = true; scratchCanvas.setPointerCapture(event.pointerId); scratchAt(event); });
+    scratchCanvas.addEventListener('pointermove', event => { if (drawing) scratchAt(event); });
+    scratchCanvas.addEventListener('pointerup', () => { drawing = false; });
+    scratchCanvas.addEventListener('pointercancel', () => { drawing = false; });
+}
