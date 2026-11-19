@@ -365,6 +365,66 @@ img {
     color: #cfc6b7
 }
 
+.scratch-card {
+    position: relative;
+    width: min(310px, calc(100vw - 48px));
+    height: 188px;
+    margin: 34px auto 0;
+    overflow: hidden;
+    border: 1px solid #d8b77b;
+    background: #f4eee4;
+    color: #1b2016;
+    box-shadow: 0 18px 45px rgba(0, 0, 0, .24);
+    touch-action: none;
+    user-select: none
+}
+
+.scratch-date {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-content: center;
+    gap: 5px
+}
+
+.scratch-date span {
+    color: #8d7854;
+    font-size: 8px;
+    letter-spacing: 4px
+}
+
+.scratch-date strong {
+    font: 500 58px/.9 "Cormorant Garamond", serif;
+    color: #1b2016
+}
+
+.scratch-date b {
+    font: 500 11px "DM Sans", sans-serif;
+    letter-spacing: 3px
+}
+
+.scratch-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    cursor: crosshair
+}
+
+.scratch-instruction {
+    position: absolute;
+    z-index: 2;
+    left: 50%;
+    bottom: 8px;
+    margin: 0;
+    transform: translateX(-50%);
+    color: #f4eee4;
+    font-size: 7px;
+    letter-spacing: 3px;
+    pointer-events: none;
+    text-shadow: 0 1px 4px #171b12
+}
+
 .events {
     text-align: center
 }
